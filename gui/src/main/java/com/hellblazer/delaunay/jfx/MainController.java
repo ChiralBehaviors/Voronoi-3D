@@ -167,6 +167,12 @@ public class MainController implements Initializable {
         }
     }
 
+    public void open(ActionEvent actionEvent) {
+    }
+
+    public void export(ActionEvent event) {
+    }
+
     public void toggleSettings(ActionEvent event) {
         final SplitPane.Divider divider = splitPane.getDividers()
                                                    .get(0);

@@ -142,11 +142,7 @@ public class SettingsController implements Initializable {
     public TitledPane                     x6;
     public CheckBox                       yUpCheckBox;
 
-    private final ContentModel            contentModel;
-
-    public SettingsController(ContentModel contentModel) {
-        this.contentModel = contentModel;
-    }
+    private final ContentModel            contentModel = Jfx3dViewerApp.getContentModel();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

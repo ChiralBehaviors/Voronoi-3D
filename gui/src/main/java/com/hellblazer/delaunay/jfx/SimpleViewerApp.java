@@ -37,7 +37,6 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -85,9 +84,9 @@ public class SimpleViewerApp extends Application {
         root3D.getChildren()
               .addAll(camera, autoScalingGroup);
 
-        Node content = null;
-        autoScalingGroup.getChildren()
-                        .add(content);
+//        Node content = null;
+//        autoScalingGroup.getChildren()
+//                        .add(content);
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO,
                                                       new KeyValue(cameraYRotate.angleProperty(),
