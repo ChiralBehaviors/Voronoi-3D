@@ -80,7 +80,7 @@ public class MainController {
     private int                triangleCount     = 0;
     private ContentModel       contentModel;
     private TimelineController timelineController;
-    private SessionManager     sessionManager    = SessionManager.getSessionManager();
+    private SessionManager     sessionManager;
 
     private void updateStatus() {
         nodeCount = 0;
@@ -146,8 +146,9 @@ public class MainController {
         }
     }
 
-    public void setContentModel(ContentModel contentModel) {
+    public void initialize(ContentModel contentModel, SessionManager sm) {
         this.contentModel = contentModel;
+        sessionManager = sm;
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("navigation.fxml"));
@@ -155,13 +156,13 @@ public class MainController {
             Parent navigationPanel = loader.load();
             NavigationController nav = loader.<NavigationController> getController();
             nav.setContentModel(contentModel);
-            
+
             // CREATE SETTINGS PANEL
             loader = new FXMLLoader(getClass().getResource("settings.fxml"));
             settingsPanel = loader.load();
             SettingsController settings = loader.<SettingsController> getController();
-            settings.setContentModel(contentModel);
-            
+            settings.initialize(contentModel, sessionManager);
+
             // SETUP SPLIT PANE
             splitPane.getItems()
                      .addAll(new SubSceneResizer(contentModel.subSceneProperty(),

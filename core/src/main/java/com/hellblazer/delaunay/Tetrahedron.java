@@ -30,9 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.vecmath.Point3f;
-
 import com.hellblazer.utils.collections.IdentitySet;
+
+import javafx.geometry.Point3D;
 
 /**
  * An oriented, delaunay tetrahedral cell. The vertices of the tetrahedron are
@@ -687,11 +687,11 @@ public class Tetrahedron implements Iterable<OrientedFace> {
      *
      * @param faces
      */
-    public void addFacesCoordinates(List<Point3f[]> faces) {
-        faces.add(new Point3f[] { a.asPoint3f(), d.asPoint3f(), b.asPoint3f() });
-        faces.add(new Point3f[] { b.asPoint3f(), c.asPoint3f(), a.asPoint3f() });
-        faces.add(new Point3f[] { c.asPoint3f(), b.asPoint3f(), d.asPoint3f() });
-        faces.add(new Point3f[] { d.asPoint3f(), a.asPoint3f(), c.asPoint3f() });
+    public void addFacesCoordinates(List<Point3D[]> faces) {
+        faces.add(new Point3D[] { a.asPoint3D(), d.asPoint3D(), b.asPoint3D() });
+        faces.add(new Point3D[] { b.asPoint3D(), c.asPoint3D(), a.asPoint3D() });
+        faces.add(new Point3D[] { c.asPoint3D(), b.asPoint3D(), d.asPoint3D() });
+        faces.add(new Point3D[] { d.asPoint3D(), a.asPoint3D(), c.asPoint3D() });
     }
 
     /**
@@ -1188,14 +1188,14 @@ public class Tetrahedron implements Iterable<OrientedFace> {
      * @param face
      */
     void traverseVoronoiFace(Tetrahedron origin, Tetrahedron from, Vertex vC,
-                             Vertex axis, List<Point3f> face) {
+                             Vertex axis, List<Point3D> face) {
         if (origin == this) {
             return;
         }
         double[] center = new double[3];
         centerSphere(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, d.x, d.y,
                      d.z, center);
-        face.add(new Point3f((float) center[0], (float) center[1],
+        face.add(new Point3D((float) center[0], (float) center[1],
                              (float) center[2]));
         V next = VORONOI_FACE_NEXT[ordinalOf(from).ordinal()][ordinalOf(vC).ordinal()][ordinalOf(
                                                                                                  axis).ordinal()];
@@ -1215,19 +1215,19 @@ public class Tetrahedron implements Iterable<OrientedFace> {
      * @param axis
      * @param face
      */
-    void traverseVoronoiFace(Vertex vC, Vertex axis, List<Point3f[]> faces) {
-        ArrayList<Point3f> face = new ArrayList<Point3f>();
+    void traverseVoronoiFace(Vertex vC, Vertex axis, List<Point3D[]> faces) {
+        ArrayList<Point3D> face = new ArrayList<Point3D>();
         double[] center = new double[3];
         centerSphere(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, d.x, d.y,
                      d.z, center);
-        face.add(new Point3f((float) center[0], (float) center[1],
+        face.add(new Point3D((float) center[0], (float) center[1],
                              (float) center[2]));
         V v = VORONOI_FACE_ORIGIN[ordinalOf(vC).ordinal()][ordinalOf(axis).ordinal()];
         Tetrahedron next = getNeighbor(v);
         if (next != null) {
             next.traverseVoronoiFace(this, this, vC, axis, face);
         }
-        faces.add(face.toArray(new Point3f[face.size()]));
+        faces.add(face.toArray(new Point3D[face.size()]));
     }
 
     /**

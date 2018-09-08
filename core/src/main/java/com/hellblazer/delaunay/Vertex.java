@@ -21,9 +21,9 @@ package com.hellblazer.delaunay;
 
 import java.util.Random;
 
-import javax.vecmath.Point3f;
-
 import com.hellblazer.utils.math.Geometry;
+
+import javafx.geometry.Point3D;
 
 /**
  *
@@ -121,10 +121,6 @@ public class Vertex {
 
     public Vertex(double i, double j, double k, double scale) {
         this(i * scale, j * scale, k * scale);
-    }
-
-    public Point3f asPoint3f() {
-        return new Point3f((float) x, (float) y, (float) z);
     }
 
     /**
@@ -237,4 +233,7 @@ public class Vertex {
         return "{" + x + ", " + y + ", " + z + "}";
     }
 
+    public Point3D asPoint3D() {
+        return new Point3D(x, y, z);
+    }
 }

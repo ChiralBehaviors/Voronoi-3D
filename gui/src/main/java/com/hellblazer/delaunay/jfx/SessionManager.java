@@ -55,19 +55,9 @@ public class SessionManager {
     private String               name;
     private Properties           props               = new Properties();
 
-    private SessionManager(String name) {
+    public SessionManager(String name) {
         this.name = name;
         SESSION_PROPERTIES_FILENAME = name + "_session.properties";
-    }
-
-    private static SessionManager sessionManager;
-
-    public static SessionManager createSessionManager(String name) {
-        return sessionManager = new SessionManager(name);
-    }
-
-    public static SessionManager getSessionManager() {
-        return sessionManager;
     }
 
     public Properties getProperties() {

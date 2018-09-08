@@ -37,9 +37,9 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 
-import javax.vecmath.Point3f;
-
 import com.hellblazer.utils.collections.IdentitySet;
+
+import javafx.geometry.Point3D;
 
 /**
  * A Delaunay tetrahedralization.
@@ -49,8 +49,8 @@ import com.hellblazer.utils.collections.IdentitySet;
  */
 
 public class Tetrahedralization {
-    private static class EmptySet<T> extends AbstractSet<T> implements
-            Serializable {
+    private static class EmptySet<T> extends AbstractSet<T>
+            implements Serializable {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -108,18 +108,33 @@ public class Tetrahedralization {
      * A pre-built table of all the permutations of remaining faces to check in
      * location.
      */
-    private static final V[][][] ORDER    = new V[][][] {
-            { { B, C, D }, { C, B, D }, { C, D, B }, { B, D, C }, { D, B, C },
-            { D, C, B } },
+    private static final V[][][] ORDER    = new V[][][] { { { B, C, D },
+                                                            { C, B, D },
+                                                            { C, D, B },
+                                                            { B, D, C },
+                                                            { D, B, C },
+                                                            { D, C, B } },
 
-            { { A, C, D }, { C, A, D }, { C, D, A }, { A, D, C }, { D, A, C },
-            { D, C, A } },
+                                                          { { A, C, D },
+                                                            { C, A, D },
+                                                            { C, D, A },
+                                                            { A, D, C },
+                                                            { D, A, C },
+                                                            { D, C, A } },
 
-            { { B, A, D }, { A, B, D }, { A, D, B }, { B, D, A }, { D, B, A },
-            { D, A, B } },
+                                                          { { B, A, D },
+                                                            { A, B, D },
+                                                            { A, D, B },
+                                                            { B, D, A },
+                                                            { D, B, A },
+                                                            { D, A, B } },
 
-            { { B, C, A }, { C, B, A }, { C, A, B }, { B, A, C }, { A, B, C },
-            { A, C, B } }                };
+                                                          { { B, C, A },
+                                                            { C, B, A },
+                                                            { C, A, B },
+                                                            { B, A, C },
+                                                            { A, B, C },
+                                                            { A, C, B } } };
 
     /**
      * Scale of the universe
@@ -191,7 +206,8 @@ public class Tetrahedralization {
         LinkedList<OrientedFace> ears = getEars(v);
         while (v.getOrder() > 4) {
             for (int i = 0; i < ears.size();) {
-                if (ears.get(i).flip(i, ears, v)) {
+                if (ears.get(i)
+                        .flip(i, ears, v)) {
                     ears.remove(i);
                 } else {
                     i++;
@@ -205,7 +221,8 @@ public class Tetrahedralization {
     public LinkedList<OrientedFace> getEars(Vertex v) {
         assert v != null && v.getAdjacent() != null;
         EarSet aggregator = new EarSet();
-        v.getAdjacent().visitStar(v, aggregator);
+        v.getAdjacent()
+         .visitStar(v, aggregator);
         return aggregator.getEars();
     }
 
@@ -221,15 +238,16 @@ public class Tetrahedralization {
         assert v != null && v.getAdjacent() != null;
 
         final Set<Vertex> neighbors = new IdentitySet<Vertex>();
-        v.getAdjacent().visitStar(v, new StarVisitor() {
-            @Override
-            public void visit(V vertex, Tetrahedron t, Vertex x, Vertex y,
-                              Vertex z) {
-                neighbors.add(x);
-                neighbors.add(y);
-                neighbors.add(z);
-            }
-        });
+        v.getAdjacent()
+         .visitStar(v, new StarVisitor() {
+             @Override
+             public void visit(V vertex, Tetrahedron t, Vertex x, Vertex y,
+                               Vertex z) {
+                 neighbors.add(x);
+                 neighbors.add(y);
+                 neighbors.add(z);
+             }
+         });
         return neighbors;
     }
 
@@ -237,14 +255,15 @@ public class Tetrahedralization {
         assert v != null && v.getAdjacent() != null;
 
         final Deque<OrientedFace> star = new ArrayDeque<OrientedFace>();
-        v.getAdjacent().visitStar(v, new StarVisitor() {
+        v.getAdjacent()
+         .visitStar(v, new StarVisitor() {
 
-            @Override
-            public void visit(V vertex, Tetrahedron t, Vertex x, Vertex y,
-                              Vertex z) {
-                star.push(t.getFace(vertex));
-            }
-        });
+             @Override
+             public void visit(V vertex, Tetrahedron t, Vertex x, Vertex y,
+                               Vertex z) {
+                 star.push(t.getFace(vertex));
+             }
+         });
         return star;
     }
 
@@ -290,34 +309,34 @@ public class Tetrahedralization {
      *            - the vertex of interest
      * @return the list of faces defining the voronoi region defined by v
      */
-    public List<Point3f[]> getVoronoiRegion(final Vertex v) {
+    public List<Point3D[]> getVoronoiRegion(final Vertex v) {
         assert v != null && v.getAdjacent() != null;
 
-        final ArrayList<Point3f[]> faces = new ArrayList<Point3f[]>();
-        v.getAdjacent().visitStar(v, new StarVisitor() {
-            Set<Vertex> neighbors = new IdentitySet<Vertex>(10);
+        final ArrayList<Point3D[]> faces = new ArrayList<Point3D[]>();
+        v.getAdjacent()
+         .visitStar(v, new StarVisitor() {
+             Set<Vertex> neighbors = new IdentitySet<Vertex>(10);
 
-            @Override
-            public void visit(V vertex, Tetrahedron t, Vertex x, Vertex y,
-                              Vertex z) {
-                if (neighbors.add(x)) {
-                    t.traverseVoronoiFace(v, x, faces);
-                }
-                if (neighbors.add(y)) {
-                    t.traverseVoronoiFace(v, y, faces);
-                }
-                if (neighbors.add(z)) {
-                    t.traverseVoronoiFace(v, z, faces);
-                }
-            }
-        });
+             @Override
+             public void visit(V vertex, Tetrahedron t, Vertex x, Vertex y,
+                               Vertex z) {
+                 if (neighbors.add(x)) {
+                     t.traverseVoronoiFace(v, x, faces);
+                 }
+                 if (neighbors.add(y)) {
+                     t.traverseVoronoiFace(v, y, faces);
+                 }
+                 if (neighbors.add(z)) {
+                     t.traverseVoronoiFace(v, z, faces);
+                 }
+             }
+         });
         return faces;
     }
 
     /**
-     * Insert the vertex into the tetrahedralization. See
-     * "Computing the 3D Voronoi Diagram Robustly: An Easy Explanation", by Hugo
-     * Ledoux
+     * Insert the vertex into the tetrahedralization. See "Computing the 3D
+     * Voronoi Diagram Robustly: An Easy Explanation", by Hugo Ledoux
      * <p>
      *
      * @param v
@@ -329,7 +348,8 @@ public class Tetrahedralization {
         List<OrientedFace> ears = new ArrayList<OrientedFace>();
         last = locate(v).flip1to4(v, ears);
         while (!ears.isEmpty()) {
-            Tetrahedron l = ears.remove(ears.size() - 1).flip(v, ears);
+            Tetrahedron l = ears.remove(ears.size() - 1)
+                                .flip(v, ears);
             if (l != null) {
                 last = l;
             }
@@ -378,7 +398,8 @@ public class Tetrahedralization {
             // get the tetrahedron on the other side of the face
             Tetrahedron tetrahedron = current.getNeighbor(o);
             int i = 0;
-            for (V v : Tetrahedralization.ORDER[tetrahedron.ordinalOf(current).ordinal()][random.nextInt(6)]) {
+            for (V v : Tetrahedralization.ORDER[tetrahedron.ordinalOf(current)
+                                                           .ordinal()][random.nextInt(6)]) {
                 o = v;
                 current = tetrahedron;
                 if (tetrahedron.orientationWrt(v, query) < 0) {
@@ -453,54 +474,70 @@ public class Tetrahedralization {
         }
         assert d != null;
         Tetrahedron t = new Tetrahedron(a, b, c, d);
-        base.getIncident().patch(base.getIncidentVertex(), t, D);
+        base.getIncident()
+            .patch(base.getIncidentVertex(), t, D);
         if (face.includes(a)) {
             if (face.includes(b)) {
                 assert !face.includes(c);
-                face.getIncident().patch(face.getIncidentVertex(), t, C);
+                face.getIncident()
+                    .patch(face.getIncidentVertex(), t, C);
                 face = star.pop();
                 if (face.includes(a)) {
                     assert !face.includes(b);
-                    face.getIncident().patch(face.getIncidentVertex(), t, B);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, B);
                     face = star.pop();
                     assert !face.includes(a);
-                    face.getIncident().patch(face.getIncidentVertex(), t, A);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, A);
                 } else {
-                    face.getIncident().patch(face.getIncidentVertex(), t, A);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, A);
                     face = star.pop();
                     assert !face.includes(b);
-                    face.getIncident().patch(face.getIncidentVertex(), t, B);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, B);
                 }
             } else {
-                face.getIncident().patch(face.getIncidentVertex(), t, B);
+                face.getIncident()
+                    .patch(face.getIncidentVertex(), t, B);
                 face = star.pop();
                 if (face.includes(a)) {
                     assert !face.includes(c);
-                    face.getIncident().patch(face.getIncidentVertex(), t, C);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, C);
                     face = star.pop();
                     assert !face.includes(a);
-                    face.getIncident().patch(face.getIncidentVertex(), t, A);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, A);
                 } else {
-                    face.getIncident().patch(face.getIncidentVertex(), t, A);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, A);
                     face = star.pop();
                     assert !face.includes(c);
-                    face.getIncident().patch(face.getIncidentVertex(), t, C);
+                    face.getIncident()
+                        .patch(face.getIncidentVertex(), t, C);
                 }
             }
         } else {
-            face.getIncident().patch(face.getIncidentVertex(), t, A);
+            face.getIncident()
+                .patch(face.getIncidentVertex(), t, A);
             face = star.pop();
             if (face.includes(b)) {
                 assert !face.includes(c);
-                face.getIncident().patch(face.getIncidentVertex(), t, C);
+                face.getIncident()
+                    .patch(face.getIncidentVertex(), t, C);
                 face = star.pop();
                 assert !face.includes(b);
-                face.getIncident().patch(face.getIncidentVertex(), t, B);
+                face.getIncident()
+                    .patch(face.getIncidentVertex(), t, B);
             } else {
-                face.getIncident().patch(face.getIncidentVertex(), t, B);
+                face.getIncident()
+                    .patch(face.getIncidentVertex(), t, B);
                 face = star.pop();
                 assert !face.includes(c);
-                face.getIncident().patch(face.getIncidentVertex(), t, C);
+                face.getIncident()
+                    .patch(face.getIncidentVertex(), t, C);
             }
         }
 

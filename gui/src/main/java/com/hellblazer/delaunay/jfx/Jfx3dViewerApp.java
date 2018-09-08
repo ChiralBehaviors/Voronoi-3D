@@ -49,17 +49,18 @@ public class Jfx3dViewerApp extends Application {
         launch(args);
     }
 
-    private ContentModel   contentModel;
-    private SessionManager sessionManager;
+    protected ContentModel contentModel;
+    protected SessionManager     sessionManager;
 
     public ContentModel getContentModel() {
         return contentModel;
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
-        sessionManager = SessionManager.createSessionManager("Jfx3dViewerApp");
+    public final void start(Stage stage) throws Exception {
+        sessionManager = new SessionManager("Jfx3dViewerApp");
         sessionManager.loadSession();
+        contentModel = createContentModel();
 
         List<String> args = getParameters().getRaw();
         if (!args.isEmpty()) {
@@ -69,14 +70,17 @@ public class Jfx3dViewerApp extends Application {
                                                             .toURL()
                                                             .toString());
         }
-        contentModel = new ContentModel();
         FXMLLoader loader = new FXMLLoader(Jfx3dViewerApp.class.getResource("main.fxml"));
         Scene scene = new Scene(loader.load(), 1024, 600);
         MainController main = loader.<MainController> getController();
-        main.setContentModel(contentModel);
+        main.initialize(contentModel, sessionManager);
         stage.setScene(scene);
         stage.show();
 
         stage.setOnCloseRequest(event -> sessionManager.saveSession());
+    }
+    
+    protected ContentModel createContentModel() {
+        return new ContentModel(sessionManager);
     }
 }

@@ -143,7 +143,8 @@ public class SettingsController {
         return contentModel;
     }
 
-    public void setContentModel(ContentModel contentModel) {
+    public SessionManager initialize(ContentModel contentModel,
+                                     SessionManager sessionManager) {
         this.contentModel = contentModel;
 
         // keep one pane open always
@@ -436,8 +437,6 @@ public class SettingsController {
             }
         });
 
-        SessionManager sessionManager = SessionManager.getSessionManager();
-
         sessionManager.bind(showAxisCheckBox.selectedProperty(), "showAxis");
         sessionManager.bind(yUpCheckBox.selectedProperty(), "yUp");
         sessionManager.bind(msaaCheckBox.selectedProperty(), "msaa");
@@ -469,5 +468,6 @@ public class SettingsController {
         sessionManager.bind(ambientEnableCheckbox.selectedProperty(),
                             "ambientEnable");
         sessionManager.bind(settings, "settingsPane");
+        return sessionManager;
     }
 }
