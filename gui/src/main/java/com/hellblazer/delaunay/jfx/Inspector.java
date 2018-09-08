@@ -22,11 +22,13 @@ public class Inspector extends Jfx3dViewerApp {
         ContentModel model = super.createContentModel();
 
         final Tetrahedralization tet = new Tetrahedralization(new Random(666));
-        for (Vertex v : Examples.getCubicCrystalStructure()) {
+        for (Vertex v : Examples.getGrid()) {
             tet.insert(v);
         }
 
-        model.setContent(new TetrahedralizationView(tet));
+        TetrahedralizationView content = new TetrahedralizationView(tet);
+        content.update(false, true, true, true);
+        model.setContent(content);
         return model;
     }
 

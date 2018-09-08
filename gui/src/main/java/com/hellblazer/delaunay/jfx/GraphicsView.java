@@ -3,15 +3,21 @@ package com.hellblazer.delaunay.jfx;
 import static javafx.scene.paint.Color.DARKRED;
 import static javafx.scene.paint.Color.RED;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import com.hellblazer.delaunay.jfx.shape3d.PolygonMesh;
+import com.hellblazer.delaunay.jfx.shape3d.PolygonMeshView;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
@@ -62,13 +68,12 @@ public class GraphicsView extends Group {
         return false;
     }
 
-    protected void newFace(Point3D vertices[], boolean triangle,
-                           Material material) {
+    protected void displayFace(Point3D vertices[], boolean triangle,
+                               Material material) {
         if (triangle) {
-            triangleFace(vertices, material);
-        } else {
-            triangleEdge(vertices, material);
-        }
+            face(vertices, material);
+        } 
+            edge(vertices, material);
     }
 
     protected void render(List<Point3D[]> region, Material color,
@@ -77,26 +82,25 @@ public class GraphicsView extends Group {
             if (isAuxillary(face)) {
                 continue;
             }
-            newFace(face, showFaces, color);
+            displayFace(face, showFaces, color);
         }
     }
 
     private Cylinder createEdge(Point3D origin, Point3D target) {
-        Point3D yAxis = new Point3D(0, 1, 0);
         Point3D diff = target.subtract(origin);
-        double height = diff.magnitude();
 
         Point3D mid = target.midpoint(origin);
         Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(),
                                                  mid.getZ());
 
+        Point3D yAxis = new Point3D(0, 1, 0);
         Point3D axisOfRotation = diff.crossProduct(yAxis);
         double angle = Math.acos(diff.normalize()
                                      .dotProduct(yAxis));
         Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle),
                                                axisOfRotation);
 
-        Cylinder line = new Cylinder(1, height);
+        Cylinder line = new Cylinder(0.001, diff.magnitude());
 
         line.getTransforms()
             .addAll(moveToMidpoint, rotateAroundCenter);
@@ -104,30 +108,47 @@ public class GraphicsView extends Group {
         return line;
     }
 
-    private void triangleEdge(Point3D[] vertices, Material material) {
+    private void edge(Point3D[] vertices, Material material) {
         for (int i = 0; i < vertices.length; i++) {
-            Cylinder edge = createEdge(vertices[i], (vertices[(i + 1) % i]));
+            Cylinder edge = createEdge(vertices[i],
+                                       (vertices[(i + 1) % vertices.length]));
             edge.setMaterial(material);
             getChildren().add(edge);
         }
     }
 
-    private void triangleFace(Point3D[] vertices, Material material) {
+    private void face(Point3D[] vertices, Material material) {
         float[] points = new float[vertices.length * 3];
+        float[] textCoords = new float[] { 0.0f, 1.0f };
         int i = 0;
         for (Point3D v : vertices) {
-            points[i++] = (float) v.getX();
+            points[i] = (float) v.getX();
             points[i++] = (float) v.getY();
             points[i++] = (float) v.getZ();
+            i++;
         }
-        TriangleMesh mesh = new TriangleMesh();
+        int[][] faces = new int[1][];
+        faces[0] = new int[vertices.length * 4];
+        int index = 0;
+        for (i = 0; i < vertices.length; i++) {
+            faces[0][index++] = i;
+            faces[0][index++] = 1;
+        }
+        faces[0][index++] = 0;
+        faces[0][index++] = 1;
+        for (i = vertices.length - 1; i != 0; i--) {
+            faces[0][index++] = i;
+            faces[0][index++] = 1;
+        }
+        PolygonMesh mesh = new PolygonMesh(points, textCoords, faces);
         mesh.getPoints()
             .addAll(points);
         mesh.getTexCoords()
-            .addAll(texCoords);
-        mesh.getFaces()
-            .addAll(faces);
-        MeshView meshView = new MeshView(mesh);
+            .addAll(textCoords);
+        mesh.getFaceSmoothingGroups().addAll(1);
+        PolygonMeshView meshView = new PolygonMeshView(mesh);
+        meshView.setDrawMode(DrawMode.FILL);
+//                meshView.setCullFace(CullFace.NONE);
         meshView.setMaterial(material);
         getChildren().add(meshView);
     }
