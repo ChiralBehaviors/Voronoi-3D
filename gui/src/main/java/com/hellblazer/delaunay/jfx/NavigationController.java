@@ -31,23 +31,16 @@
  */
 package com.hellblazer.delaunay.jfx;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollBar;
 
 /**
  * Controller class for settings panel
  */
-public class NavigationController implements Initializable {
+public class NavigationController {
     //    public FourWayNavControl eyeNav;
-    public ScrollBar     zoomBar;
-    //    public FourWayNavControl camNav;
-    private ContentModel contentModel = Jfx3dViewerApp.getContentModel();
+    public ScrollBar zoomBar;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void setContentModel(ContentModel contentModel) {
         zoomBar.setMin(-100);
         zoomBar.setMax(0);
         zoomBar.setValue(contentModel.getCameraPosition()
@@ -92,5 +85,6 @@ public class NavigationController implements Initializable {
         //                }
         //            }
         //        });
+
     }
 }

@@ -32,8 +32,6 @@
 package com.hellblazer.delaunay.jfx;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -41,7 +39,6 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -62,7 +59,7 @@ import javafx.util.Duration;
 /**
  * Controller class for main fxml file.
  */
-public class MainController implements Initializable {
+public class MainController {
     public SplitMenuButton     openMenuBtn;
     public Label               status;
     public SplitPane           splitPane;
@@ -81,56 +78,9 @@ public class MainController implements Initializable {
     private int                nodeCount         = 0;
     private int                meshCount         = 0;
     private int                triangleCount     = 0;
-    private final ContentModel contentModel      = Jfx3dViewerApp.getContentModel();
+    private ContentModel       contentModel;
     private TimelineController timelineController;
     private SessionManager     sessionManager    = SessionManager.getSessionManager();
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        try {
-            // CREATE NAVIGATOR CONTROLS
-            Parent navigationPanel = FXMLLoader.load(MainController.class.getResource("navigation.fxml"));
-            // CREATE SETTINGS PANEL
-            settingsPanel = FXMLLoader.load(MainController.class.getResource("settings.fxml"));
-            // SETUP SPLIT PANE
-            splitPane.getItems()
-                     .addAll(new SubSceneResizer(contentModel.subSceneProperty(),
-                                                 navigationPanel),
-                             settingsPanel);
-            splitPane.getDividers()
-                     .get(0)
-                     .setPosition(1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // create timelineController;
-        timelineController = new TimelineController(startBtn, rwBtn, playBtn,
-                                                    ffBtn, endBtn, loopBtn);
-        timelineController.timelineProperty()
-                          .bind(contentModel.timelineProperty());
-        timelineDisplay.timelineProperty()
-                       .bind(contentModel.timelineProperty());
-        sessionManager.bind(settingsBtn.selectedProperty(), "settingsBtn");
-        sessionManager.bind(splitPane.getDividers()
-                                     .get(0)
-                                     .positionProperty(),
-                            "settingsSplitPanePosition");
-        sessionManager.bind(optimizeCheckBox.selectedProperty(), "optimize");
-        sessionManager.bind(loadAsPolygonsCheckBox.selectedProperty(),
-                            "loadAsPolygons");
-        sessionManager.bind(loopBtn.selectedProperty(), "loop");
-
-        String url = sessionManager.getProperties()
-                                   .getProperty(Jfx3dViewerApp.FILE_URL_PROPERTY);
-        if (url == null) {
-            url = ContentModel.class.getResource("drop-here-large-yUp.obj")
-                                    .toExternalForm();
-        }
-        // load(url);
-
-        // do initial status update
-        updateStatus();
-    }
 
     private void updateStatus() {
         nodeCount = 0;
@@ -194,5 +144,61 @@ public class MainController implements Initializable {
                                       new KeyValue(divider.positionProperty(),
                                                    1))).play();
         }
+    }
+
+    public void setContentModel(ContentModel contentModel) {
+        this.contentModel = contentModel;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("navigation.fxml"));
+            // CREATE NAVIGATOR CONTROLS
+            Parent navigationPanel = loader.load();
+            NavigationController nav = loader.<NavigationController> getController();
+            nav.setContentModel(contentModel);
+            
+            // CREATE SETTINGS PANEL
+            loader = new FXMLLoader(getClass().getResource("settings.fxml"));
+            settingsPanel = loader.load();
+            SettingsController settings = loader.<SettingsController> getController();
+            settings.setContentModel(contentModel);
+            
+            // SETUP SPLIT PANE
+            splitPane.getItems()
+                     .addAll(new SubSceneResizer(contentModel.subSceneProperty(),
+                                                 navigationPanel),
+                             settingsPanel);
+            splitPane.getDividers()
+                     .get(0)
+                     .setPosition(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // create timelineController;
+        timelineController = new TimelineController(startBtn, rwBtn, playBtn,
+                                                    ffBtn, endBtn, loopBtn);
+        timelineController.timelineProperty()
+                          .bind(contentModel.timelineProperty());
+        timelineDisplay.timelineProperty()
+                       .bind(contentModel.timelineProperty());
+        sessionManager.bind(settingsBtn.selectedProperty(), "settingsBtn");
+        sessionManager.bind(splitPane.getDividers()
+                                     .get(0)
+                                     .positionProperty(),
+                            "settingsSplitPanePosition");
+        sessionManager.bind(optimizeCheckBox.selectedProperty(), "optimize");
+        sessionManager.bind(loadAsPolygonsCheckBox.selectedProperty(),
+                            "loadAsPolygons");
+        sessionManager.bind(loopBtn.selectedProperty(), "loop");
+
+        String url = sessionManager.getProperties()
+                                   .getProperty(Jfx3dViewerApp.FILE_URL_PROPERTY);
+        if (url == null) {
+            url = ContentModel.class.getResource("drop-here-large-yUp.obj")
+                                    .toExternalForm();
+        }
+        // load(url);
+
+        // do initial status update
+        updateStatus();
     }
 }

@@ -31,15 +31,11 @@
  */
 package com.hellblazer.delaunay.jfx;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
@@ -62,7 +58,7 @@ import javafx.util.StringConverter;
 /**
  * Controller class for settings panel
  */
-public class SettingsController implements Initializable {
+public class SettingsController {
     private class Power10DoubleBinding extends DoubleBinding {
 
         private DoubleProperty prop;
@@ -141,11 +137,15 @@ public class SettingsController implements Initializable {
     public CheckBox                       wireFrameCheckbox;
     public TitledPane                     x6;
     public CheckBox                       yUpCheckBox;
+    private ContentModel                  contentModel;
 
-    private final ContentModel            contentModel = Jfx3dViewerApp.getContentModel();
+    public ContentModel getContentModel() {
+        return contentModel;
+    }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void setContentModel(ContentModel contentModel) {
+        this.contentModel = contentModel;
+
         // keep one pane open always
         settings.expandedPaneProperty()
                 .addListener((observable, oldValue,
