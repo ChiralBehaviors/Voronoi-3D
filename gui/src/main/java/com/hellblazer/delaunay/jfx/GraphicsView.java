@@ -3,12 +3,11 @@ package com.hellblazer.delaunay.jfx;
 import static javafx.scene.paint.Color.DARKRED;
 import static javafx.scene.paint.Color.RED;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hellblazer.delaunay.jfx.shape3d.PolygonMesh;
-import com.hellblazer.delaunay.jfx.shape3d.PolygonMeshView;
+import com.javafx.experiments.shape3d.PolygonMesh;
+import com.javafx.experiments.shape3d.PolygonMeshView;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -18,9 +17,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
-import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 
@@ -72,8 +69,8 @@ public class GraphicsView extends Group {
                                Material material) {
         if (triangle) {
             face(vertices, material);
-        } 
-            edge(vertices, material);
+        }
+        edge(vertices, material);
     }
 
     protected void render(List<Point3D[]> region, Material color,
@@ -134,21 +131,16 @@ public class GraphicsView extends Group {
             faces[0][index++] = i;
             faces[0][index++] = 1;
         }
-        faces[0][index++] = 0;
-        faces[0][index++] = 1;
-        for (i = vertices.length - 1; i != 0; i--) {
-            faces[0][index++] = i;
-            faces[0][index++] = 1;
-        }
         PolygonMesh mesh = new PolygonMesh(points, textCoords, faces);
         mesh.getPoints()
             .addAll(points);
         mesh.getTexCoords()
             .addAll(textCoords);
-        mesh.getFaceSmoothingGroups().addAll(1);
+        mesh.getFaceSmoothingGroups()
+            .addAll(1);
         PolygonMeshView meshView = new PolygonMeshView(mesh);
         meshView.setDrawMode(DrawMode.FILL);
-//                meshView.setCullFace(CullFace.NONE);
+        meshView.setCullFace(CullFace.NONE);
         meshView.setMaterial(material);
         getChildren().add(meshView);
     }

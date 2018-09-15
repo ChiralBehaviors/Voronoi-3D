@@ -5,6 +5,8 @@ import java.util.Random;
 import com.hellblazer.delaunay.Examples;
 import com.hellblazer.delaunay.Tetrahedralization;
 import com.hellblazer.delaunay.Vertex;
+import com.javafx.experiments.jfx3dviewer.ContentModel;
+import com.javafx.experiments.jfx3dviewer.Jfx3dViewerApp;
 
 /**
  *
@@ -18,8 +20,8 @@ public class Inspector extends Jfx3dViewerApp {
     }
 
     @Override
-    public ContentModel createContentModel() {
-        ContentModel model = super.createContentModel();
+    public void initializeContentModel() {
+        ContentModel model = getContentModel();
 
         final Tetrahedralization tet = new Tetrahedralization(new Random(666));
         for (Vertex v : Examples.getGrid()) {
@@ -29,7 +31,6 @@ public class Inspector extends Jfx3dViewerApp {
         TetrahedralizationView content = new TetrahedralizationView(tet);
         content.update(false, true, true, true);
         model.setContent(content);
-        return model;
     }
 
 }

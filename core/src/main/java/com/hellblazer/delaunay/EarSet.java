@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2010 Hal Hildebrand. All rights reserved.
+ * Copyright (C) 2018 Chiral Behaviors, LLC. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as

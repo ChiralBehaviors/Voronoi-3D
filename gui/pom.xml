@@ -21,6 +21,11 @@
             <groupId>java3d</groupId>
             <artifactId>j3d-core-utils</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.chiralbehaviors.javafx</groupId>
+            <artifactId>3dviewer</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
 
